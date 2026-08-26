@@ -10,19 +10,30 @@ public class Nate {
         Scanner in = new Scanner(System.in);
         String input;
 
+        int countOfTasks = 0;
+        String[] listOfTasks = new String[100];
+
         while (true) {
             input = in.nextLine();
             printLine();
 
-            if (input.equals("bye")) {
+            if (input.equals("bye")){
                 System.out.println("Byebye. Hope to see you soon!");
                 printLine();
                 break;
-            } else {
-                System.out.println(input);
+            } else if (input.equals("list")) {
+                for (int i = 0; i < countOfTasks; i++) {
+                    System.out.println(i + 1 + ". " + listOfTasks[i]);
+                }
                 printLine();
+            } else {
+                System.out.println("added: " + input);
+                printLine();
+                listOfTasks[countOfTasks] = input;
+                countOfTasks++;
             }
         }
+
         in.close();
     }
 
