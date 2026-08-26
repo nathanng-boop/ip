@@ -1,6 +1,16 @@
 import java.util.Scanner;
 
+/**
+ * Represents a simple chatbot that stores tasks entered by the user
+ * and supports listing, marking, and unmarking tasks as done.
+ */
 public class Nate {
+
+    /**
+     * Runs the Nate chatbot, reading user commands until "bye" is entered.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         printLine();
         System.out.println("Hello! I'm Nate.");
@@ -54,6 +64,7 @@ public class Nate {
         in.close();
     }
 
+    /** Prints a horizontal divider line. */
     private static void printLine() {
         System.out.println("________________________________________");
     }
