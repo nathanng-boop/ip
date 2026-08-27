@@ -12,8 +12,15 @@ public class Nate {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
+        String logo = "    _   _____  ____________\n"
+                + "   / | / /   |/_  __/ ____/\n"
+                + "  /  |/ / /| | / / / __/   \n"
+                + " / /|  / ___ |/ / / /___   \n"
+                + "/_/ |_/_/  |_/_/ /_____/   \n";
+        System.out.println("Hello from\n" + logo);
+
         printLine();
-        System.out.println("Hello! I'm Nate.");
+        System.out.println("Welcome! I'm Nate.");
         System.out.println("What can I do for you?");
         printLine();
 
