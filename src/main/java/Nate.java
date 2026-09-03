@@ -59,7 +59,7 @@ public class Nate {
                     handleEvent(input);
                     break;
                 default:
-                    handleTodo(input);
+                    System.out.println("Sorry, I don't understand that command.");
                     break;
             }
             printLine();
