@@ -46,6 +46,7 @@ public class Task {
 
     /**
      * Returns a formatted line representing the task, including its status icon.
+     * Subclasses override this to add their own type icon and extra details.
      *
      * @return Formatted task line in the form "[X] description".
      */

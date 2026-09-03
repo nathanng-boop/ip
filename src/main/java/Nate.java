@@ -60,15 +60,42 @@ public class Nate {
                     System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
                 }
                 printLine();
-            } else {
-                listOfTasks[countOfTasks] = new Task(input);
+            } else if (input.startsWith("todo ")) {
+                String description = input.substring("todo ".length());
+                listOfTasks[countOfTasks] = new Todo(description);
                 countOfTasks++;
-                System.out.println("added: " + input);
+                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
+                printLine();
+            } else if (input.startsWith("deadline ")) {
+                String details = input.substring("deadline ".length());
+                String[] parts = details.split(" /by ", 2);
+                listOfTasks[countOfTasks] = new Deadline(parts[0], parts[1]);
+                countOfTasks++;
+                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
+                printLine();
+            } else if (input.startsWith("event ")) {
+                String details = input.substring("event ".length());
+                String[] fromSplit = details.split(" /from ", 2);
+                String[] toSplit = fromSplit[1].split(" /to ", 2);
+                listOfTasks[countOfTasks] = new Event(fromSplit[0], toSplit[0], toSplit[1]);
+                countOfTasks++;
+                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
+                printLine();
+            } else {
+                listOfTasks[countOfTasks] = new Todo(input);
+                countOfTasks++;
+                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
                 printLine();
             }
         }
 
         in.close();
+    }
+
+    private static void printAddedMessage(Task task, int totalTasks) {
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + task.getTaskLine());
+        System.out.println("Now you have " + totalTasks + " tasks in the list.");
     }
 
     /** Prints a horizontal divider line. */
