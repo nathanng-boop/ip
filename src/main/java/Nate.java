@@ -9,6 +9,15 @@ public class Nate {
     private static int countOfTasks = 0;
     private static Task[] listOfTasks = new Task[100];
 
+    private static final String COMMAND_MARK = "mark ";
+    private static final String COMMAND_UNMARK = "unmark ";
+    private static final String COMMAND_TODO = "todo ";
+    private static final String COMMAND_DEADLINE = "deadline ";
+    private static final String COMMAND_EVENT = "event ";
+    private static final String DEADLINE_SEPARATOR = " /by ";
+    private static final String EVENT_FROM_SEPARATOR = " /from ";
+    private static final String EVENT_TO_SEPARATOR = " /to ";
+
     /**
      * Runs the Nate chatbot, reading user commands until "bye" is entered.
      *
@@ -93,7 +102,7 @@ public class Nate {
 
     /** Marks the task specified in the input as done. */
     private static void handleMark(String input) {
-        int taskIndex = Integer.parseInt(input.substring("mark ".length())) - 1;
+        int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
         if (taskIndex >= 0 && taskIndex < countOfTasks) {
             listOfTasks[taskIndex].markAsDone();
             System.out.println("Good job! I've marked this task as done:");
@@ -103,7 +112,7 @@ public class Nate {
 
     /** Marks the task specified in the input as not done. */
     private static void handleUnmark(String input) {
-        int taskIndex = Integer.parseInt(input.substring("unmark ".length())) - 1;
+        int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
         if (taskIndex >= 0 && taskIndex < countOfTasks) {
             listOfTasks[taskIndex].markAsNotDone();
             System.out.println("Okay, I've marked this task as not done yet:");
@@ -113,22 +122,22 @@ public class Nate {
 
     /** Adds a Todo task using the given input. */
     private static void handleTodo(String input) {
-        String description = input.startsWith("todo ") ? input.substring("todo ".length()) : input;
+        String description = input.startsWith(COMMAND_TODO) ? input.substring(COMMAND_TODO.length()) : input;
         addTask(new Todo(description));
     }
 
     /** Adds a Deadline task using the given input. */
     private static void handleDeadline(String input) {
-        String details = input.substring("deadline ".length());
-        String[] parts = details.split(" /by ", 2);
+        String details = input.substring(COMMAND_DEADLINE.length());
+        String[] parts = details.split(DEADLINE_SEPARATOR, 2);
         addTask(new Deadline(parts[0], parts[1]));
     }
 
     /** AAdds an Event task using the given input. */
     private static void handleEvent(String input) {
-        String details = input.substring("event ".length());
-        String[] fromSplit = details.split(" /from ", 2);
-        String[] toSplit = fromSplit[1].split(" /to ", 2);
+        String details = input.substring(COMMAND_EVENT.length());
+        String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
+        String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
         addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
     }
 
