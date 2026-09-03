@@ -6,12 +6,60 @@ import java.util.Scanner;
  */
 public class Nate {
 
+    private static int countOfTasks = 0;
+    private static Task[] listOfTasks = new Task[100];
+
     /**
      * Runs the Nate chatbot, reading user commands until "bye" is entered.
      *
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
+        printGreeting();
+
+        boolean isRunning = true;
+        Scanner in = new Scanner(System.in);
+        String input;
+
+        while (isRunning) {
+            input = in.nextLine();
+            String commandWord = input.split(" ", 2)[0];
+            printLine();
+
+            switch (commandWord) {
+                case "bye":
+                    handleBye();
+                    isRunning = false;
+                    break;
+                case "list":
+                    handleList();
+                    break;
+                case "mark":
+                    handleMark(input);
+                    break;
+                case "unmark":
+                    handleUnmark(input);
+                    break;
+                case "todo":
+                    handleTodo(input);
+                    break;
+                case "deadline":
+                    handleDeadline(input);
+                    break;
+                case "event":
+                    handleEvent(input);
+                    break;
+                default:
+                    handleTodo(input);
+                    break;
+            }
+            printLine();
+        }
+        in.close();
+    }
+
+    /** Prints the chatbot's logo and greeting. */
+    private static void printGreeting() {
         String logo = "    _   _____  ____________\n"
                 + "   / | / /   |/_  __/ ____/\n"
                 + "  /  |/ / /| | / / / __/   \n"
@@ -21,85 +69,75 @@ public class Nate {
 
         printLine();
         System.out.println("Welcome! I'm Nate.");
-        System.out.println("What can I do for you?");
+        System.out.println("How can I help you? Feel free to ask me anything :)");
         printLine();
-
-        Scanner in = new Scanner(System.in);
-        String input;
-
-        int countOfTasks = 0;
-        Task[] listOfTasks = new Task[100];
-
-        while (true) {
-            input = in.nextLine();
-            printLine();
-
-            if (input.equals("bye")) {
-                System.out.println("Byebye. Hope to see you soon!");
-                printLine();
-                break;
-            } else if (input.equals("list")) {
-                System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < countOfTasks; i++) {
-                    System.out.println((i + 1) + "." + listOfTasks[i].getTaskLine());
-                }
-                printLine();
-            } else if (input.startsWith("mark ")) {
-                int taskIndex = Integer.parseInt(input.substring(5)) - 1;
-                if (taskIndex >= 0 && taskIndex < countOfTasks) {
-                    listOfTasks[taskIndex].markAsDone();
-                    System.out.println("Good job! I've marked this task as done:");
-                    System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
-                }
-                printLine();
-            } else if (input.startsWith("unmark ")) {
-                int taskIndex = Integer.parseInt(input.substring(7)) - 1;
-                if (taskIndex >= 0 && taskIndex < countOfTasks) {
-                    listOfTasks[taskIndex].markAsNotDone();
-                    System.out.println("Okay, I've marked this task as not done yet:");
-                    System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
-                }
-                printLine();
-            } else if (input.startsWith("todo ")) {
-                String description = input.substring("todo ".length());
-                listOfTasks[countOfTasks] = new Todo(description);
-                countOfTasks++;
-                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
-                printLine();
-            } else if (input.startsWith("deadline ")) {
-                String details = input.substring("deadline ".length());
-                String[] parts = details.split(" /by ", 2);
-                listOfTasks[countOfTasks] = new Deadline(parts[0], parts[1]);
-                countOfTasks++;
-                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
-                printLine();
-            } else if (input.startsWith("event ")) {
-                String details = input.substring("event ".length());
-                String[] fromSplit = details.split(" /from ", 2);
-                String[] toSplit = fromSplit[1].split(" /to ", 2);
-                listOfTasks[countOfTasks] = new Event(fromSplit[0], toSplit[0], toSplit[1]);
-                countOfTasks++;
-                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
-                printLine();
-            } else {
-                listOfTasks[countOfTasks] = new Todo(input);
-                countOfTasks++;
-                printAddedMessage(listOfTasks[countOfTasks - 1], countOfTasks);
-                printLine();
-            }
-        }
-
-        in.close();
-    }
-
-    private static void printAddedMessage(Task task, int totalTasks) {
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task.getTaskLine());
-        System.out.println("Now you have " + totalTasks + " tasks in the list.");
     }
 
     /** Prints a horizontal divider line. */
     private static void printLine() {
         System.out.println("________________________________________");
+    }
+
+    /** Prints the farewell message. */
+    private static void handleBye() {
+        System.out.println("Byebye. Hope to see you soon!");
+    }
+
+    /** Prints all tasks currently in the list. */
+    private static void handleList() {
+        System.out.println("Here are the tasks in your list:");
+        for (int i = 0; i < countOfTasks; i++) {
+            System.out.println((i + 1) + "." + listOfTasks[i].getTaskLine());
+        }
+    }
+
+    /** Marks the task specified in the input as done. */
+    private static void handleMark(String input) {
+        int taskIndex = Integer.parseInt(input.substring("mark ".length())) - 1;
+        if (taskIndex >= 0 && taskIndex < countOfTasks) {
+            listOfTasks[taskIndex].markAsDone();
+            System.out.println("Good job! I've marked this task as done:");
+            System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
+        }
+    }
+
+    /** Marks the task specified in the input as not done. */
+    private static void handleUnmark(String input) {
+        int taskIndex = Integer.parseInt(input.substring("unmark ".length())) - 1;
+        if (taskIndex >= 0 && taskIndex < countOfTasks) {
+            listOfTasks[taskIndex].markAsNotDone();
+            System.out.println("Okay, I've marked this task as not done yet:");
+            System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
+        }
+    }
+
+    /** Adds a Todo task using the given input. */
+    private static void handleTodo(String input) {
+        String description = input.startsWith("todo ") ? input.substring("todo ".length()) : input;
+        addTask(new Todo(description));
+    }
+
+    /** Adds a Deadline task using the given input. */
+    private static void handleDeadline(String input) {
+        String details = input.substring("deadline ".length());
+        String[] parts = details.split(" /by ", 2);
+        addTask(new Deadline(parts[0], parts[1]));
+    }
+
+    /** AAdds an Event task using the given input. */
+    private static void handleEvent(String input) {
+        String details = input.substring("event ".length());
+        String[] fromSplit = details.split(" /from ", 2);
+        String[] toSplit = fromSplit[1].split(" /to ", 2);
+        addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
+    }
+
+    /** Adds the given task to the task list and prints the confirmation message. */
+    private static void addTask (Task task) {
+        listOfTasks[countOfTasks] = task;
+        countOfTasks++;
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + task.getTaskLine());
+        System.out.println("Now you have " + countOfTasks + " tasks in the list.");
     }
 }
