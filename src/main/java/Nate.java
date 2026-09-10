@@ -62,7 +62,7 @@ public class Nate {
                     default:
                         throw new NateException("Apologies, I do not understand that command :<");
                     }
-                }catch (NateException e) {
+                } catch (NateException e) {
                     System.out.println("Uh oh! " + e.getMessage());
             }
             printLine();
@@ -128,23 +128,46 @@ public class Nate {
     }
 
     /** Adds a Todo task using the given input. */
-    private static void handleTodo(String input) {
+    private static void handleTodo(String input) throws NateException {
         String description = input.startsWith(COMMAND_TODO) ? input.substring(COMMAND_TODO.length()) : input;
+
+        if (description.isBlank()) {
+            throw new NateException("Might you be missing a task description? :o");
+        }
+
         addTask(new Todo(description));
     }
 
     /** Adds a Deadline task using the given input. */
-    private static void handleDeadline(String input) {
+    private static void handleDeadline(String input) throws NateException {
+        if (!input.contains(DEADLINE_SEPARATOR)) {
+            throw new NateException("Deadline must include '/by' followed by the due date/time.");
+        }
+
         String details = input.substring(COMMAND_DEADLINE.length());
         String[] parts = details.split(DEADLINE_SEPARATOR, 2);
+
+        if (parts[0].isBlank()) {
+            throw new NateException("Deadline description is missing!");
+        }
+
         addTask(new Deadline(parts[0], parts[1]));
     }
 
     /** AAdds an Event task using the given input. */
-    private static void handleEvent(String input) {
+    private static void handleEvent(String input) throws NateException {
+        if (!input.contains(EVENT_FROM_SEPARATOR) || !input.contains(EVENT_TO_SEPARATOR)) {
+            throw new NateException("Event must include '/from' and '/to' with the relevant dates/times.");
+        }
+
         String details = input.substring(COMMAND_EVENT.length());
         String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
         String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
+
+        if (fromSplit[0].isBlank()) {
+            throw new NateException("Event description is missing!");
+        }
+
         addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
     }
 
