@@ -6,7 +6,7 @@ package nate;
  */
 public class NateException extends Exception {
 
-    /** Creates a nate.NateException with the given error message. */
+    /** Creates a NateException with the given error message. */
     public NateException(String errorMessage) {
         super(errorMessage);
     }
