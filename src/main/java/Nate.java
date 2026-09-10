@@ -14,9 +14,9 @@ public class Nate {
     private static final String COMMAND_TODO = "todo ";
     private static final String COMMAND_DEADLINE = "deadline ";
     private static final String COMMAND_EVENT = "event ";
-    private static final String DEADLINE_SEPARATOR = " /by ";
-    private static final String EVENT_FROM_SEPARATOR = " /from ";
-    private static final String EVENT_TO_SEPARATOR = " /to ";
+    private static final String DEADLINE_SEPARATOR = "/by ";
+    private static final String EVENT_FROM_SEPARATOR = "/from ";
+    private static final String EVENT_TO_SEPARATOR = "/to ";
 
     /**
      * Runs the Nate chatbot, reading user commands until "bye" is entered.
@@ -142,14 +142,20 @@ public class Nate {
 
     /** Adds a Deadline task using the given input. */
     private static void handleDeadline(String input) throws NateException {
-        if (!input.contains(DEADLINE_SEPARATOR)) {
+        String details = input.length() > COMMAND_DEADLINE.length() ? input.substring(COMMAND_DEADLINE.length()) : "";
+
+        if (details.isBlank()) {
+            throw new NateException("Deadline description is missing!");
+        }
+
+        if (!details.contains(DEADLINE_SEPARATOR)) {
             throw new NateException("Deadline must include '/by' followed by the due date/time.");
         }
 
-        String details = input.substring(COMMAND_DEADLINE.length());
         String[] parts = details.split(DEADLINE_SEPARATOR, 2);
+        String description = parts[0].trim();
 
-        if (parts[0].isBlank()) {
+        if (description.isBlank()) {
             throw new NateException("Deadline description is missing!");
         }
 
@@ -158,17 +164,24 @@ public class Nate {
 
     /** AAdds an Event task using the given input. */
     private static void handleEvent(String input) throws NateException {
-        if (!input.contains(EVENT_FROM_SEPARATOR) || !input.contains(EVENT_TO_SEPARATOR)) {
-            throw new NateException("Event must include '/from' and '/to' with the relevant dates/times.");
-        }
+        String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
 
-        String details = input.substring(COMMAND_EVENT.length());
-        String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
-        String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
-
-        if (fromSplit[0].isBlank()) {
+        if (details.isBlank()) {
             throw new NateException("Event description is missing!");
         }
+
+        if (!details.contains(EVENT_FROM_SEPARATOR) || !details.contains(EVENT_TO_SEPARATOR)) {
+            throw new NateException("Event must include '/from' and '/to' with the relevant dates/times");
+        }
+
+        String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
+        String description = fromSplit[0].trim();
+
+        if (description.isBlank()) {
+            throw new NateException("Event description is missing!");
+        }
+
+        String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
 
         addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
     }
