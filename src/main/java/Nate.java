@@ -35,32 +35,35 @@ public class Nate {
             String commandWord = input.split(" ", 2)[0];
             printLine();
 
-            switch (commandWord) {
-                case "bye":
-                    handleBye();
-                    isRunning = false;
-                    break;
-                case "list":
-                    handleList();
-                    break;
-                case "mark":
-                    handleMark(input);
-                    break;
-                case "unmark":
-                    handleUnmark(input);
-                    break;
-                case "todo":
-                    handleTodo(input);
-                    break;
-                case "deadline":
-                    handleDeadline(input);
-                    break;
-                case "event":
-                    handleEvent(input);
-                    break;
-                default:
-                    System.out.println("Sorry, I don't understand that command.");
-                    break;
+            try {
+                switch (commandWord) {
+                    case "bye":
+                        handleBye();
+                        isRunning = false;
+                        break;
+                    case "list":
+                        handleList();
+                        break;
+                    case "mark":
+                        handleMark(input);
+                        break;
+                    case "unmark":
+                        handleUnmark(input);
+                        break;
+                    case "todo":
+                        handleTodo(input);
+                        break;
+                    case "deadline":
+                        handleDeadline(input);
+                        break;
+                    case "event":
+                        handleEvent(input);
+                        break;
+                    default:
+                        throw new NateException("Apologies, I do not understand that command :<");
+                    }
+                }catch (NateException e) {
+                    System.out.println("Uh oh! " + e.getMessage());
             }
             printLine();
         }
