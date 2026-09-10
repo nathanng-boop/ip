@@ -1,3 +1,5 @@
+package nate.task;
+
 /**
  * Represents a task that starts and ends at specific date/times.
  */
@@ -6,7 +8,7 @@ public class Event extends Task {
     protected String to;
 
     /**
-     * Creates an Event with the given description, start time, and end time.
+     * Creates an nate.task.Event with the given description, start time, and end time.
      *
      * @param description Description of the event.
      * @param from Start date/time of the event.
