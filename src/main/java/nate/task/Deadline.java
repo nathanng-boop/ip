@@ -8,7 +8,7 @@ public class Deadline extends Task {
 
 
     /**
-     * Creates a nate.task.Deadline with the given description and due date/time.
+     * Creates a Deadline with the given description and due date/time.
      *
      * @param description Description of the deadline.
      * @param by Date/time by which the task should be done.
