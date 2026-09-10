@@ -1,8 +1,10 @@
+package nate.task;
+
 /**
  * Represents a task with no date/time attached to it.
  */
 public class Todo extends Task {
-    /** Creates a Todo with the given description. */
+    /** Creates a nate.task.Todo with the given description. */
     public Todo(String description) {
             super(description);
     }

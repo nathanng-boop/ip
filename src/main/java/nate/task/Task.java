@@ -1,3 +1,5 @@
+package nate.task;
+
 /**
  * Represents a task with a description and a completion status.
  */
@@ -6,7 +8,7 @@ public class Task {
     protected boolean isDone;
 
     /**
-     * Creates a Task with the given description.
+     * Creates a nate.task.Task with the given description.
      * The task is initially marked as not done.
      *
      * @param description Description of the task.
