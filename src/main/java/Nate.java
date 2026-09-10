@@ -14,9 +14,9 @@ public class Nate {
     private static final String COMMAND_TODO = "todo ";
     private static final String COMMAND_DEADLINE = "deadline ";
     private static final String COMMAND_EVENT = "event ";
-    private static final String DEADLINE_SEPARATOR = " /by ";
-    private static final String EVENT_FROM_SEPARATOR = " /from ";
-    private static final String EVENT_TO_SEPARATOR = " /to ";
+    private static final String DEADLINE_SEPARATOR = "/by ";
+    private static final String EVENT_FROM_SEPARATOR = "/from ";
+    private static final String EVENT_TO_SEPARATOR = "/to ";
 
     /**
      * Runs the Nate chatbot, reading user commands until "bye" is entered.
@@ -35,32 +35,35 @@ public class Nate {
             String commandWord = input.split(" ", 2)[0];
             printLine();
 
-            switch (commandWord) {
-                case "bye":
-                    handleBye();
-                    isRunning = false;
-                    break;
-                case "list":
-                    handleList();
-                    break;
-                case "mark":
-                    handleMark(input);
-                    break;
-                case "unmark":
-                    handleUnmark(input);
-                    break;
-                case "todo":
-                    handleTodo(input);
-                    break;
-                case "deadline":
-                    handleDeadline(input);
-                    break;
-                case "event":
-                    handleEvent(input);
-                    break;
-                default:
-                    System.out.println("Sorry, I don't understand that command.");
-                    break;
+            try {
+                switch (commandWord) {
+                    case "bye":
+                        handleBye();
+                        isRunning = false;
+                        break;
+                    case "list":
+                        handleList();
+                        break;
+                    case "mark":
+                        handleMark(input);
+                        break;
+                    case "unmark":
+                        handleUnmark(input);
+                        break;
+                    case "todo":
+                        handleTodo(input);
+                        break;
+                    case "deadline":
+                        handleDeadline(input);
+                        break;
+                    case "event":
+                        handleEvent(input);
+                        break;
+                    default:
+                        throw new NateException("Apologies, I do not understand that command :<");
+                    }
+                } catch (NateException e) {
+                    System.out.println("Uh oh! " + e.getMessage());
             }
             printLine();
         }
@@ -101,47 +104,85 @@ public class Nate {
     }
 
     /** Marks the task specified in the input as done. */
-    private static void handleMark(String input) {
+    private static void handleMark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
+
         if (taskIndex < 0 || taskIndex >= countOfTasks) {
-            System.out.println("That task number doesn't exist.");
-            return;
+            throw new NateException("Task number nowhere to be found...");
         }
+
         listOfTasks[taskIndex].markAsDone();
         System.out.println("Good job! I've marked this task as done:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
     }
 
     /** Marks the task specified in the input as not done. */
-    private static void handleUnmark(String input) {
+    private static void handleUnmark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
+
         if (taskIndex < 0 || taskIndex >= countOfTasks) {
-            System.out.println("That task number doesn't exist.");
-            return;
+            throw new NateException("Task number nowhere to be found...");
         }
+
         listOfTasks[taskIndex].markAsNotDone();
         System.out.println("Okay, I've marked this task as not done yet:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
     }
 
     /** Adds a Todo task using the given input. */
-    private static void handleTodo(String input) {
+    private static void handleTodo(String input) throws NateException {
         String description = input.startsWith(COMMAND_TODO) ? input.substring(COMMAND_TODO.length()) : input;
+
+        if (description.isBlank()) {
+            throw new NateException("Might you be missing a task description? :o");
+        }
+
         addTask(new Todo(description));
     }
 
     /** Adds a Deadline task using the given input. */
-    private static void handleDeadline(String input) {
-        String details = input.substring(COMMAND_DEADLINE.length());
+    private static void handleDeadline(String input) throws NateException {
+        String details = input.length() > COMMAND_DEADLINE.length() ? input.substring(COMMAND_DEADLINE.length()) : "";
+
+        if (details.isBlank()) {
+            throw new NateException("Deadline description is missing!");
+        }
+
+        if (!details.contains(DEADLINE_SEPARATOR)) {
+            throw new NateException("Deadline must include '/by' followed by the due date/time.");
+        }
+
         String[] parts = details.split(DEADLINE_SEPARATOR, 2);
+        String description = parts[0].trim();
+
+        if (description.isBlank()) {
+            throw new NateException("Deadline description is missing!");
+        }
+
         addTask(new Deadline(parts[0], parts[1]));
     }
 
     /** AAdds an Event task using the given input. */
-    private static void handleEvent(String input) {
-        String details = input.substring(COMMAND_EVENT.length());
+    private static void handleEvent(String input) throws NateException {
+        String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
+
+        if (details.isBlank()) {
+            throw new NateException("Event description is missing!");
+        }
+
+        if (!details.contains(EVENT_FROM_SEPARATOR) || !details.contains(EVENT_TO_SEPARATOR)) {
+            throw new NateException("Event must include '/from' and '/to' with the relevant dates/times");
+        }
+
         String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
+        String description = fromSplit[0].trim();
+
+        if (description.isBlank()) {
+            throw new NateException("Event description is missing!");
+        }
+
         String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
+
         addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
     }
 
