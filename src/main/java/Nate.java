@@ -104,24 +104,26 @@ public class Nate {
     }
 
     /** Marks the task specified in the input as done. */
-    private static void handleMark(String input) {
+    private static void handleMark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
+
         if (taskIndex < 0 || taskIndex >= countOfTasks) {
-            System.out.println("That task number doesn't exist.");
-            return;
+            throw new NateException("Task number nowhere to be found...");
         }
+
         listOfTasks[taskIndex].markAsDone();
         System.out.println("Good job! I've marked this task as done:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
     }
 
     /** Marks the task specified in the input as not done. */
-    private static void handleUnmark(String input) {
+    private static void handleUnmark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
+
         if (taskIndex < 0 || taskIndex >= countOfTasks) {
-            System.out.println("That task number doesn't exist.");
-            return;
+            throw new NateException("Task number nowhere to be found...");
         }
+
         listOfTasks[taskIndex].markAsNotDone();
         System.out.println("Okay, I've marked this task as not done yet:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
