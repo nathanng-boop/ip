@@ -171,10 +171,10 @@ public class Nate {
             throw new NateException("Deadline description is missing!");
         }
 
-        addTask(new Deadline(parts[0], parts[1]));
+        addTask(new Deadline(description, parts[1].trim()));
     }
 
-    /** AAdds an nate.task.Event task using the given input. */
+    /** Adds task.Event task using the given input. */
     private static void handleEvent(String input) throws NateException {
         String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
 
@@ -195,7 +195,9 @@ public class Nate {
 
         String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
 
-        addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
+        String from = toSplit[0].trim();
+        String to = toSplit[1].trim();
+        addTask(new Event(description, from, to));
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */

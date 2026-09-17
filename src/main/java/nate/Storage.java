@@ -95,11 +95,11 @@ public class Storage {
             return "T | " + doneFlag + " | " + task.getDescription();
         } else if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            return "D | " + doneFlag + " | " + task.getDescription() + "| " + deadline.getBy();
+            return "D | " + doneFlag + " | " + task.getDescription() + " | " + deadline.getBy();
         } else if (task instanceof Event) {
             Event event = (Event) task;
             return "E | " + doneFlag + " | " + task.getDescription()
-                    + "| " + event.getFrom() + "| " + event.getTo();
+                    + " | " + event.getFrom() + " | " + event.getTo();
         }
         return "";
     }
