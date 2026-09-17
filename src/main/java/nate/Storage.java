@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import nate.task.Deadline;
 import nate.task.Event;
 import nate.task.Task;
@@ -33,6 +35,24 @@ public class Storage {
     }
 
     /**
+     * Loads tasks from the data file into the given array, starting at index 0.
+     *
+     * @param tasks Array to populate with loaded tasks.
+     * @return Number of tasks loaded.
+     */
+    public static int load(Task[] tasks) throws IOException {
+        Path filePath = Path.of(FILE_PATH);
+        List<String> lines = Files.readAllLines(filePath);
+
+        int count = 0;
+        for (String line : lines) {
+            tasks[count] = fromFileFormat(line);
+            count++;
+        }
+        return count;
+    }
+
+    /**
      * Converts a single task into its pipe-delimited file format.
      *
      * @param task Task to convert.
@@ -51,5 +71,32 @@ public class Storage {
                     + "| " + event.getFrom() + "| " + event.getTo();
         }
         return "";
+    }
+
+    /**
+     * Converts a single pipe-delimited file line back into a Task.
+     *
+     * @param line Line read from the data file.
+     * @return Reconstructed task.
+     */
+    private static Task fromFileFormat(String line) {
+        String[] parts = line.split(" \\| ");
+        String type = parts[0];
+        boolean isDone = parts[1].equals("1");
+        String description = parts[2];
+
+        Task task;
+        if (type.equals("T")) {
+            task = new Todo(description);
+        } else if (type.equals("D")) {
+            task = new Deadline(description, parts[3]);
+        } else {
+            task = new Event(description, parts[3], parts[4]);
+        }
+
+        if (isDone) {
+            task.markAsDone();
+        }
+        return task;
     }
 }

@@ -1,3 +1,4 @@
 T | 0 | run
-D | 1 | assignment | 9pm
-E | 0 | meeting | 9pm | 10pm
+D | 1 | project| 9pm
+T | 0 | sleep
+T | 0 | eat

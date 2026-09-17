@@ -33,6 +33,12 @@ public class Nate {
     public static void main(String[] args) {
         printGreeting();
 
+        try {
+            countOfTasks = Storage.load(listOfTasks);
+        } catch (IOException e) {
+            System.out.println("No saved tasks found. Starting with an empty list.");
+        }
+
         boolean isRunning = true;
         Scanner in = new Scanner(System.in);
         String input;
