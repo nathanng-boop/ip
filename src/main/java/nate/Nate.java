@@ -1,6 +1,7 @@
 package nate;
 
 import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Scanner;
 import nate.task.Task;
 import nate.task.Todo;
@@ -32,6 +33,9 @@ public class Nate {
      */
     public static void main(String[] args) {
         printGreeting();
+
+        Storage.load(listOfTasks);
+
 
         boolean isRunning = true;
         Scanner in = new Scanner(System.in);
@@ -122,6 +126,8 @@ public class Nate {
         }
 
         listOfTasks.get(taskIndex).markAsDone();
+        saveTasks();
+
         System.out.println("Good job! I've marked this task as done:");
         System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
     }
@@ -135,6 +141,8 @@ public class Nate {
         }
 
         listOfTasks.get(taskIndex).markAsNotDone();
+        saveTasks();
+
         System.out.println("Okay, I've marked this task as not done yet:");
         System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
     }
@@ -169,8 +177,9 @@ public class Nate {
             throw new NateException("Deadline description is missing!");
         }
 
-        addTask(new Deadline(parts[0], parts[1]));
+        addTask(new Deadline(description, parts[1].trim()));
     }
+
 
     /** Adds an Event task using the given input. */
     private static void handleEvent(String input) throws NateException {
@@ -193,7 +202,9 @@ public class Nate {
 
         String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
 
-        addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
+        String from = toSplit[0].trim();
+        String to = toSplit[1].trim();
+        addTask(new Event(description, from, to));
     }
 
     private static void handleDelete(String input) throws NateException {
@@ -205,6 +216,7 @@ public class Nate {
         System.out.println("Task removed:");
         System.out.println("  " + removedTask.getTaskLine());
         System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+        saveTasks();
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */
@@ -212,6 +224,16 @@ public class Nate {
         listOfTasks.add(task);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task.getTaskLine());
+
         System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+        saveTasks();
+    }
+
+    private static void saveTasks() {
+        try {
+            Storage.save(listOfTasks);
+        } catch (IOException e) {
+            System.out.println("Warning! Could not save tasks to disk.");
+        }
     }
 }

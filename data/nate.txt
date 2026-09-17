@@ -1,0 +1,3 @@
+D | 1 | sleep | 9pm
+E | 0 | meeting | 2pm | 8pm
+T | 0 | eat
