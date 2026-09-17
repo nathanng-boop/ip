@@ -1,5 +1,6 @@
 package nate;
 
+import java.io.IOException;
 import java.util.Scanner;
 import nate.task.Task;
 import nate.task.Todo;
@@ -118,6 +119,7 @@ public class Nate {
         }
 
         listOfTasks[taskIndex].markAsDone();
+        saveTasks();
         System.out.println("Good job! I've marked this task as done:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
     }
@@ -131,6 +133,7 @@ public class Nate {
         }
 
         listOfTasks[taskIndex].markAsNotDone();
+        saveTasks();
         System.out.println("Okay, I've marked this task as not done yet:");
         System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
     }
@@ -199,5 +202,14 @@ public class Nate {
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task.getTaskLine());
         System.out.println("Now you have " + countOfTasks + " tasks in the list.");
+        saveTasks();
+    }
+
+    private static void saveTasks() {
+        try {
+            Storage.save(listOfTasks, countOfTasks);
+        } catch (IOException e) {
+            System.out.println("Warning: could not save tasks to disk.");
+        }
     }
 }
