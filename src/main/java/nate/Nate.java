@@ -1,5 +1,6 @@
 package nate;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import nate.task.Task;
 import nate.task.Todo;
@@ -12,8 +13,7 @@ import nate.task.Event;
  */
 public class Nate {
 
-    private static int countOfTasks = 0;
-    private static Task[] listOfTasks = new Task[100];
+    private static ArrayList<Task> listOfTasks = new ArrayList<>();
 
     private static final String COMMAND_MARK = "mark ";
     private static final String COMMAND_UNMARK = "unmark ";
@@ -104,8 +104,8 @@ public class Nate {
     /** Prints all tasks currently in the list. */
     private static void handleList() {
         System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < countOfTasks; i++) {
-            System.out.println((i + 1) + "." + listOfTasks[i].getTaskLine());
+        for (int i = 0; i < listOfTasks.size(); i++) {
+            System.out.println((i + 1) + "." + listOfTasks.get(i).getTaskLine());
         }
     }
 
@@ -113,26 +113,26 @@ public class Nate {
     private static void handleMark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
 
-        if (taskIndex < 0 || taskIndex >= countOfTasks) {
+        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks[taskIndex].markAsDone();
+        listOfTasks.get(taskIndex).markAsDone();
         System.out.println("Good job! I've marked this task as done:");
-        System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
+        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
     }
 
     /** Marks the task specified in the input as not done. */
     private static void handleUnmark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
 
-        if (taskIndex < 0 || taskIndex >= countOfTasks) {
+        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks[taskIndex].markAsNotDone();
+        listOfTasks.get(taskIndex).markAsNotDone();
         System.out.println("Okay, I've marked this task as not done yet:");
-        System.out.println("  " + listOfTasks[taskIndex].getTaskLine());
+        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
     }
 
     /** Adds a Todo task using the given input. */
@@ -146,7 +146,7 @@ public class Nate {
         addTask(new Todo(description));
     }
 
-    /** Adds a task.Deadline task using the given input. */
+    /** Adds a Deadline task using the given input. */
     private static void handleDeadline(String input) throws NateException {
         String details = input.length() > COMMAND_DEADLINE.length() ? input.substring(COMMAND_DEADLINE.length()) : "";
 
@@ -168,7 +168,7 @@ public class Nate {
         addTask(new Deadline(parts[0], parts[1]));
     }
 
-    /** AAdds an nate.task.Event task using the given input. */
+    /** Adds an Event task using the given input. */
     private static void handleEvent(String input) throws NateException {
         String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
 
@@ -194,10 +194,9 @@ public class Nate {
 
     /** Adds the given task to the task list and prints the confirmation message. */
     private static void addTask (Task task) {
-        listOfTasks[countOfTasks] = task;
-        countOfTasks++;
+        listOfTasks.add(task);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task.getTaskLine());
-        System.out.println("Now you have " + countOfTasks + " tasks in the list.");
+        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
     }
 }
