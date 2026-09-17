@@ -23,6 +23,7 @@ public class Nate {
     private static final String DEADLINE_SEPARATOR = "/by ";
     private static final String EVENT_FROM_SEPARATOR = "/from ";
     private static final String EVENT_TO_SEPARATOR = "/to ";
+    private static final String COMMAND_DELETE = "delete ";
 
     /**
      * Runs the Nate chatbot, reading user commands until "bye" is entered.
@@ -64,6 +65,9 @@ public class Nate {
                         break;
                     case "event":
                         handleEvent(input);
+                        break;
+                    case "delete":
+                        handleDelete(input);
                         break;
                     default:
                         throw new NateException("Apologies, I do not understand that command :<");
@@ -190,6 +194,17 @@ public class Nate {
         String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
 
         addTask(new Event(fromSplit[0], toSplit[0], toSplit[1]));
+    }
+
+    private static void handleDelete(String input) throws NateException {
+        int taskIndex = Integer.parseInt(input.substring(COMMAND_DELETE.length())) - 1;
+        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+            throw new NateException("Task number nowhere to be found...");
+        }
+        Task removedTask = listOfTasks.remove(taskIndex);
+        System.out.println("Task removed:");
+        System.out.println("  " + removedTask.getTaskLine());
+        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */
