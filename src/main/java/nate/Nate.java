@@ -2,7 +2,6 @@ package nate;
 
 import java.util.ArrayList;
 import java.io.IOException;
-import java.util.Scanner;
 import nate.task.Task;
 import nate.task.Todo;
 import nate.task.Deadline;
@@ -14,7 +13,7 @@ import nate.task.Event;
  */
 public class Nate {
 
-    private static ArrayList<Task> listOfTasks = new ArrayList<>();
+    private static final TaskList tasks = new TaskList();
     private static final Ui ui = new Ui();
 
     private static final String COMMAND_MARK = "mark ";
@@ -35,7 +34,7 @@ public class Nate {
     public static void main(String[] args) {
         ui.showWelcome();
 
-        Storage.load(listOfTasks);
+        Storage.load(tasks.asList());
 
         boolean isRunning = true;
 
@@ -89,35 +88,35 @@ public class Nate {
 
     /** Prints all tasks currently in the list. */
     private static void handleList() {
-        ui.showTaskList(listOfTasks);
+        ui.showTaskList(tasks.asList());
     }
 
     /** Marks the task specified in the input as done. */
     private static void handleMark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
 
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks.get(taskIndex).markAsDone();
+        tasks.get(taskIndex).markAsDone();
         saveTasks();
 
-        ui.showTaskMarked(listOfTasks.get(taskIndex));
+        ui.showTaskMarked(tasks.get(taskIndex));
     }
 
     /** Marks the task specified in the input as not done. */
     private static void handleUnmark(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
 
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks.get(taskIndex).markAsNotDone();
+        tasks.get(taskIndex).markAsNotDone();
         saveTasks();
 
-        ui.showTaskUnmarked(listOfTasks.get(taskIndex));
+        ui.showTaskUnmarked(tasks.get(taskIndex));
     }
 
     /** Adds a Todo task using the given input. */
@@ -182,24 +181,24 @@ public class Nate {
 
     private static void handleDelete(String input) throws NateException {
         int taskIndex = Integer.parseInt(input.substring(COMMAND_DELETE.length())) - 1;
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
-        Task removedTask = listOfTasks.remove(taskIndex);
-        ui.showTaskRemoved(removedTask, listOfTasks.size());
+        Task removedTask = tasks.remove(taskIndex);
+        ui.showTaskRemoved(removedTask, tasks.size());
         saveTasks();
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */
     private static void addTask (Task task) {
-        listOfTasks.add(task);
-        ui.showTaskAdded(task, listOfTasks.size());
+        tasks.add(task);
+        ui.showTaskAdded(task, tasks.size());
         saveTasks();
     }
 
     private static void saveTasks() {
         try {
-            Storage.save(listOfTasks);
+            Storage.save(tasks.asList());
         } catch (IOException e) {
             ui.showMessage("Warning! Could not save tasks to disk.");
         }
