@@ -1,7 +1,87 @@
 Hello from
- ____        _        
-|  _ \ _   _| | _____ 
-| | | | | | | |/ / _ \
-| |_| | |_| |   <  __/
-|____/ \__,_|_|\_\___|
+    _   _____  ____________
+   / | / /   |/_  __/ ____/
+  /  |/ / /| | / / / __/   
+ / /|  / ___ |/ / / /___   
+/_/ |_/_/  |_/_/ /_____/   
 
+________________________________________
+Welcome! I'm Nate.
+How can I help you? Feel free to ask me anything :)
+________________________________________
+No saved tasks found. Starting with an empty list.
+________________________________________
+Got it. I've added this task:
+  [T][ ] borrow book
+Now you have 1 tasks in the list.
+________________________________________
+________________________________________
+Got it. I've added this task:
+  [D][ ] return book (by: Sunday)
+Now you have 2 tasks in the list.
+________________________________________
+________________________________________
+Got it. I've added this task:
+  [E][ ] project meeting (from: Mon 2pm to: 4pm)
+Now you have 3 tasks in the list.
+________________________________________
+________________________________________
+Here are the tasks in your list:
+1.[T][ ] borrow book
+2.[D][ ] return book (by: Sunday)
+3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+________________________________________
+________________________________________
+Good job! I've marked this task as done:
+  [T][X] borrow book
+________________________________________
+________________________________________
+Good job! I've marked this task as done:
+  [D][X] return book (by: Sunday)
+________________________________________
+________________________________________
+Okay, I've marked this task as not done yet:
+  [T][ ] borrow book
+________________________________________
+________________________________________
+Here are the tasks in your list:
+1.[T][ ] borrow book
+2.[D][X] return book (by: Sunday)
+3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+________________________________________
+________________________________________
+Task removed:
+  [D][X] return book (by: Sunday)
+Now you have 2 tasks in the list.
+________________________________________
+________________________________________
+Here are the tasks in your list:
+1.[T][ ] borrow book
+2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+________________________________________
+________________________________________
+Got it. I've added this task:
+  [T][ ] todo
+Now you have 3 tasks in the list.
+________________________________________
+________________________________________
+Uh oh! Apologies, I do not understand that command :<
+________________________________________
+________________________________________
+Uh oh! Deadline must include '/by' followed by the due date/time.
+________________________________________
+________________________________________
+Uh oh! Deadline description is missing!
+________________________________________
+________________________________________
+Uh oh! Event must include '/from' and '/to' with the relevant dates/times
+________________________________________
+________________________________________
+Uh oh! Task number nowhere to be found...
+________________________________________
+________________________________________
+Uh oh! Task number nowhere to be found...
+________________________________________
+________________________________________
+Byebye. Hope to see you soon!
+________________________________________
