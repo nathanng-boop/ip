@@ -22,6 +22,7 @@ public class Nate {
     private static final String EVENT_FROM_SEPARATOR = "/from ";
     private static final String EVENT_TO_SEPARATOR = "/to ";
     private static final String COMMAND_DELETE = "delete ";
+    private static final String COMMAND_FIND = "find ";
 
     private final Storage storage;
     private final Ui ui;
@@ -75,6 +76,9 @@ public class Nate {
                         break;
                     case "delete":
                         handleDelete(input);
+                        break;
+                    case "find":
+                        handleFind(input);
                         break;
                     default:
                         throw new NateException("Apologies, I do not understand that command :<");
@@ -194,6 +198,17 @@ public class Nate {
         Task removedTask = tasks.remove(taskIndex);
         ui.showTaskRemoved(removedTask, tasks.size());
         saveTasks();
+    }
+
+    /** Finds and prints all tasks whose description contains the given keyword. */
+    private void handleFind(String input) throws NateException {
+        String keyword = Parser.extractArguments(input, COMMAND_FIND);
+
+        if (keyword.isBlank()) {
+            throw new NateException("What are you searching for? Please retry!");
+        }
+
+        ui.showMatchingTasks(tasks.find(keyword));
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */

@@ -128,4 +128,16 @@ public class Ui {
         System.out.println("Okay, I've marked this task as not done yet:");
         System.out.println("  " + task.getTaskLine());
     }
+
+    /**
+     * Prints the tasks that matched a find search, numbered from 1 within the match set.
+     *
+     * @param matches Tasks that matched the search keyword.
+     */
+    public void showMatchingTasks(ArrayList<Task> matches) {
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println((i + 1) + "." + matches.get(i).getTaskLine());
+        }
+    }
 }
