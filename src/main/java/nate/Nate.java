@@ -13,7 +13,8 @@ import nate.task.Event;
  */
 public class Nate {
 
-    private static final TaskList tasks = new TaskList();
+    private static TaskList tasks;
+    private static final Storage storage = new Storage("data" + java.io.File.separator + "nate.txt");
     private static final Ui ui = new Ui();
 
     private static final String COMMAND_MARK = "mark ";
@@ -34,7 +35,7 @@ public class Nate {
     public static void main(String[] args) {
         ui.showWelcome();
 
-        Storage.load(tasks.asList());
+        tasks = storage.load();
 
         boolean isRunning = true;
 
@@ -198,7 +199,7 @@ public class Nate {
 
     private static void saveTasks() {
         try {
-            Storage.save(tasks.asList());
+            Storage.save(tasks);
         } catch (IOException e) {
             ui.showMessage("Warning! Could not save tasks to disk.");
         }
