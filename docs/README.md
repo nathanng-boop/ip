@@ -22,7 +22,7 @@ Nate is a **chatbot for managing your task list, optimized for use through a Com
 ## Quick start
 
 1. Ensure you have Java `25` or later installed on your computer.
-2. Download the latest `nate.jar` from [here](../../../releases).
+2. Download the latest `nate.jar` from [here]([../../../releases](https://github.com/nathanng-boop/ip/releases)).
 3. Copy the file to the folder you want to use as the *home folder* for Nate.
 4. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar nate.jar`.
 5. Type a command and press Enter to execute it. Some example commands you can try:
