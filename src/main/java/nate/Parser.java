@@ -30,13 +30,26 @@ public class Parser {
 
     /**
      * Parses the zero-based task index out of an input like "mark 2".
+     * Accepts a missing or non-numeric argument gracefully by throwing
+     * a NateException rather than letting a runtime exception escape.
      *
      * @param input Full line typed by the user.
      * @param commandPrefix Prefix to strip, e.g. "mark ".
      * @return Zero-based task index.
+     * @throws NateException If no task number is given, or it isn't a valid number.
      */
-    public static int parseIndex(String input, String commandPrefix) {
-        return Integer.parseInt(input.substring(commandPrefix.length())) - 1;
+    public static int parseIndex(String input, String commandPrefix) throws NateException {
+        String argument = extractArguments(input, commandPrefix).trim();
+
+        if (argument.isBlank()) {
+            throw new NateException("Which task number did you mean?");
+        }
+
+        try {
+            return Integer.parseInt(argument) - 1;
+        } catch (NumberFormatException e) {
+            throw new NateException("That doesn't look like a task number: " + argument);
+        }
     }
 
     /**
