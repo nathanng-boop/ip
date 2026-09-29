@@ -41,7 +41,7 @@ public class Nate {
 
         while (isRunning) {
             String input = ui.readCommand();
-            String commandWord = input.split(" ", 2)[0];
+            String commandWord = Parser.getCommandWord(input);
             ui.showLine();
 
             try {
@@ -94,7 +94,7 @@ public class Nate {
 
     /** Marks the task specified in the input as done. */
     private static void handleMark(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
+        int taskIndex = Parser.parseIndex(input, COMMAND_MARK);
 
         if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
@@ -108,7 +108,7 @@ public class Nate {
 
     /** Marks the task specified in the input as not done. */
     private static void handleUnmark(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
+        int taskIndex = Parser.parseIndex(input, COMMAND_UNMARK);
 
         if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
@@ -122,7 +122,7 @@ public class Nate {
 
     /** Adds a Todo task using the given input. */
     private static void handleTodo(String input) throws NateException {
-        String description = input.startsWith(COMMAND_TODO) ? input.substring(COMMAND_TODO.length()) : input;
+        String description = input.startsWith(COMMAND_TODO) ? Parser.extractArguments(input, COMMAND_TODO) : input;
 
         if (description.isBlank()) {
             throw new NateException("Might you be missing a task description? :o");
@@ -133,7 +133,7 @@ public class Nate {
 
     /** Adds a Deadline task using the given input. */
     private static void handleDeadline(String input) throws NateException {
-        String details = input.length() > COMMAND_DEADLINE.length() ? input.substring(COMMAND_DEADLINE.length()) : "";
+        String details = Parser.extractArguments(input, COMMAND_DEADLINE);
 
         if (details.isBlank()) {
             throw new NateException("Deadline description is missing!");
@@ -143,7 +143,7 @@ public class Nate {
             throw new NateException("Deadline must include '/by' followed by the due date/time.");
         }
 
-        String[] parts = details.split(DEADLINE_SEPARATOR, 2);
+        String[] parts = Parser.splitOnce(details, DEADLINE_SEPARATOR);
         String description = parts[0].trim();
 
         if (description.isBlank()) {
@@ -156,7 +156,7 @@ public class Nate {
 
     /** Adds an Event task using the given input. */
     private static void handleEvent(String input) throws NateException {
-        String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
+        String details = Parser.extractArguments(input, COMMAND_EVENT);
 
         if (details.isBlank()) {
             throw new NateException("Event description is missing!");
@@ -166,14 +166,14 @@ public class Nate {
             throw new NateException("Event must include '/from' and '/to' with the relevant dates/times");
         }
 
-        String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
+        String[] fromSplit = Parser.splitOnce(details, EVENT_FROM_SEPARATOR);
         String description = fromSplit[0].trim();
 
         if (description.isBlank()) {
             throw new NateException("Event description is missing!");
         }
 
-        String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
+        String[] toSplit = Parser.splitOnce(fromSplit[1], EVENT_TO_SEPARATOR);
 
         String from = toSplit[0].trim();
         String to = toSplit[1].trim();
@@ -181,7 +181,8 @@ public class Nate {
     }
 
     private static void handleDelete(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_DELETE.length())) - 1;
+        int taskIndex = Parser.parseIndex(input, COMMAND_DELETE);
+
         if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
