@@ -15,6 +15,7 @@ import nate.task.Event;
 public class Nate {
 
     private static ArrayList<Task> listOfTasks = new ArrayList<>();
+    private static final Ui ui = new Ui();
 
     private static final String COMMAND_MARK = "mark ";
     private static final String COMMAND_UNMARK = "unmark ";
@@ -32,19 +33,16 @@ public class Nate {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        printGreeting();
+        ui.showWelcome();
 
         Storage.load(listOfTasks);
 
-
         boolean isRunning = true;
-        Scanner in = new Scanner(System.in);
-        String input;
 
         while (isRunning) {
-            input = in.nextLine();
+            String input = ui.readCommand();
             String commandWord = input.split(" ", 2)[0];
-            printLine();
+            ui.showLine();
 
             try {
                 switch (commandWord) {
@@ -77,44 +75,21 @@ public class Nate {
                         throw new NateException("Apologies, I do not understand that command :<");
                     }
                 } catch (NateException e) {
-                    System.out.println("Uh oh! " + e.getMessage());
+                    ui.showError(e.getMessage());
             }
-            printLine();
+            ui.showLine();
         }
-        in.close();
-    }
-
-    /** Prints the chatbot's logo and greeting. */
-    private static void printGreeting() {
-        String logo = "    _   _____  ____________\n"
-                + "   / | / /   |/_  __/ ____/\n"
-                + "  /  |/ / /| | / / / __/   \n"
-                + " / /|  / ___ |/ / / /___   \n"
-                + "/_/ |_/_/  |_/_/ /_____/   \n";
-        System.out.println("Hello from\n" + logo);
-
-        printLine();
-        System.out.println("Welcome! I'm Nate.");
-        System.out.println("How can I help you? Feel free to ask me anything :)");
-        printLine();
-    }
-
-    /** Prints a horizontal divider line. */
-    private static void printLine() {
-        System.out.println("________________________________________");
+        ui.close();
     }
 
     /** Prints the farewell message. */
     private static void handleBye() {
-        System.out.println("Byebye. Hope to see you soon!");
+        ui.showGoodbye();
     }
 
     /** Prints all tasks currently in the list. */
     private static void handleList() {
-        System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < listOfTasks.size(); i++) {
-            System.out.println((i + 1) + "." + listOfTasks.get(i).getTaskLine());
-        }
+        ui.showTaskList(listOfTasks);
     }
 
     /** Marks the task specified in the input as done. */
@@ -128,8 +103,7 @@ public class Nate {
         listOfTasks.get(taskIndex).markAsDone();
         saveTasks();
 
-        System.out.println("Good job! I've marked this task as done:");
-        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
+        ui.showTaskMarked(listOfTasks.get(taskIndex));
     }
 
     /** Marks the task specified in the input as not done. */
@@ -143,8 +117,7 @@ public class Nate {
         listOfTasks.get(taskIndex).markAsNotDone();
         saveTasks();
 
-        System.out.println("Okay, I've marked this task as not done yet:");
-        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
+        ui.showTaskUnmarked(listOfTasks.get(taskIndex));
     }
 
     /** Adds a Todo task using the given input. */
@@ -213,19 +186,14 @@ public class Nate {
             throw new NateException("Task number nowhere to be found...");
         }
         Task removedTask = listOfTasks.remove(taskIndex);
-        System.out.println("Task removed:");
-        System.out.println("  " + removedTask.getTaskLine());
-        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+        ui.showTaskRemoved(removedTask, listOfTasks.size());
         saveTasks();
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */
     private static void addTask (Task task) {
         listOfTasks.add(task);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task.getTaskLine());
-
-        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+        ui.showTaskAdded(task, listOfTasks.size());
         saveTasks();
     }
 
@@ -233,7 +201,7 @@ public class Nate {
         try {
             Storage.save(listOfTasks);
         } catch (IOException e) {
-            System.out.println("Warning! Could not save tasks to disk.");
+            ui.showMessage("Warning! Could not save tasks to disk.");
         }
     }
 }
