@@ -2,7 +2,6 @@ package nate;
 
 import java.util.ArrayList;
 import java.io.IOException;
-import java.util.Scanner;
 import nate.task.Task;
 import nate.task.Todo;
 import nate.task.Deadline;
@@ -14,8 +13,6 @@ import nate.task.Event;
  */
 public class Nate {
 
-    private static ArrayList<Task> listOfTasks = new ArrayList<>();
-
     private static final String COMMAND_MARK = "mark ";
     private static final String COMMAND_UNMARK = "unmark ";
     private static final String COMMAND_TODO = "todo ";
@@ -26,25 +23,31 @@ public class Nate {
     private static final String EVENT_TO_SEPARATOR = "/to ";
     private static final String COMMAND_DELETE = "delete ";
 
+    private final Storage storage;
+    private final Ui ui;
+    private TaskList tasks;
+
     /**
-     * Runs the Nate chatbot, reading user commands until "bye" is entered.
+     * Creates a Nate chatbot that saves to and loads from the given file path.
      *
-     * @param args Command-line arguments (not used).
+     * @param filePath Relative path to the data file, e.g. "data/nate.txt".
      */
-    public static void main(String[] args) {
-        printGreeting();
+    public Nate(String filePath) {
+        storage = new Storage(filePath);
+        ui = new Ui();
+    }
 
-        Storage.load(listOfTasks);
-
+    /** Runs the Nate chatbot, reading user commands until "bye" is entered. */
+    public void run() {
+        ui.showWelcome();
+        tasks = storage.load();
 
         boolean isRunning = true;
-        Scanner in = new Scanner(System.in);
-        String input;
 
         while (isRunning) {
-            input = in.nextLine();
-            String commandWord = input.split(" ", 2)[0];
-            printLine();
+            String input = ui.readCommand();
+            String commandWord = Parser.getCommandWord(input);
+            ui.showLine();
 
             try {
                 switch (commandWord) {
@@ -77,79 +80,54 @@ public class Nate {
                         throw new NateException("Apologies, I do not understand that command :<");
                     }
                 } catch (NateException e) {
-                    System.out.println("Uh oh! " + e.getMessage());
+                    ui.showError(e.getMessage());
             }
-            printLine();
+            ui.showLine();
         }
-        in.close();
-    }
-
-    /** Prints the chatbot's logo and greeting. */
-    private static void printGreeting() {
-        String logo = "    _   _____  ____________\n"
-                + "   / | / /   |/_  __/ ____/\n"
-                + "  /  |/ / /| | / / / __/   \n"
-                + " / /|  / ___ |/ / / /___   \n"
-                + "/_/ |_/_/  |_/_/ /_____/   \n";
-        System.out.println("Hello from\n" + logo);
-
-        printLine();
-        System.out.println("Welcome! I'm Nate.");
-        System.out.println("How can I help you? Feel free to ask me anything :)");
-        printLine();
-    }
-
-    /** Prints a horizontal divider line. */
-    private static void printLine() {
-        System.out.println("________________________________________");
+        ui.close();
     }
 
     /** Prints the farewell message. */
-    private static void handleBye() {
-        System.out.println("Byebye. Hope to see you soon!");
+    private void handleBye() {
+        ui.showGoodbye();
     }
 
     /** Prints all tasks currently in the list. */
-    private static void handleList() {
-        System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < listOfTasks.size(); i++) {
-            System.out.println((i + 1) + "." + listOfTasks.get(i).getTaskLine());
-        }
+    private void handleList() {
+        ui.showTaskList(tasks.asList());
     }
 
     /** Marks the task specified in the input as done. */
-    private static void handleMark(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_MARK.length())) - 1;
+    private void handleMark(String input) throws NateException {
+        int taskIndex = Parser.parseIndex(input, COMMAND_MARK);
 
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks.get(taskIndex).markAsDone();
+        tasks.get(taskIndex).markAsDone();
         saveTasks();
 
-        System.out.println("Good job! I've marked this task as done:");
-        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
+        ui.showTaskMarked(tasks.get(taskIndex));
     }
 
     /** Marks the task specified in the input as not done. */
-    private static void handleUnmark(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_UNMARK.length())) - 1;
+    private void handleUnmark(String input) throws NateException {
+        int taskIndex = Parser.parseIndex(input, COMMAND_UNMARK);
 
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
 
-        listOfTasks.get(taskIndex).markAsNotDone();
+        tasks.get(taskIndex).markAsNotDone();
         saveTasks();
 
-        System.out.println("Okay, I've marked this task as not done yet:");
-        System.out.println("  " + listOfTasks.get(taskIndex).getTaskLine());
+        ui.showTaskUnmarked(tasks.get(taskIndex));
     }
 
     /** Adds a Todo task using the given input. */
-    private static void handleTodo(String input) throws NateException {
-        String description = input.startsWith(COMMAND_TODO) ? input.substring(COMMAND_TODO.length()) : input;
+    private void handleTodo(String input) throws NateException {
+        String description = input.startsWith(COMMAND_TODO) ? Parser.extractArguments(input, COMMAND_TODO) : input;
 
         if (description.isBlank()) {
             throw new NateException("Might you be missing a task description? :o");
@@ -159,8 +137,8 @@ public class Nate {
     }
 
     /** Adds a Deadline task using the given input. */
-    private static void handleDeadline(String input) throws NateException {
-        String details = input.length() > COMMAND_DEADLINE.length() ? input.substring(COMMAND_DEADLINE.length()) : "";
+    private void handleDeadline(String input) throws NateException {
+        String details = Parser.extractArguments(input, COMMAND_DEADLINE);
 
         if (details.isBlank()) {
             throw new NateException("Deadline description is missing!");
@@ -170,7 +148,7 @@ public class Nate {
             throw new NateException("Deadline must include '/by' followed by the due date/time.");
         }
 
-        String[] parts = details.split(DEADLINE_SEPARATOR, 2);
+        String[] parts = Parser.splitOnce(details, DEADLINE_SEPARATOR);
         String description = parts[0].trim();
 
         if (description.isBlank()) {
@@ -182,8 +160,8 @@ public class Nate {
 
 
     /** Adds an Event task using the given input. */
-    private static void handleEvent(String input) throws NateException {
-        String details = input.length() > COMMAND_EVENT.length() ? input.substring(COMMAND_EVENT.length()) : "";
+    private void handleEvent(String input) throws NateException {
+        String details = Parser.extractArguments(input, COMMAND_EVENT);
 
         if (details.isBlank()) {
             throw new NateException("Event description is missing!");
@@ -193,47 +171,52 @@ public class Nate {
             throw new NateException("Event must include '/from' and '/to' with the relevant dates/times");
         }
 
-        String[] fromSplit = details.split(EVENT_FROM_SEPARATOR, 2);
+        String[] fromSplit = Parser.splitOnce(details, EVENT_FROM_SEPARATOR);
         String description = fromSplit[0].trim();
 
         if (description.isBlank()) {
             throw new NateException("Event description is missing!");
         }
 
-        String[] toSplit = fromSplit[1].split(EVENT_TO_SEPARATOR, 2);
+        String[] toSplit = Parser.splitOnce(fromSplit[1], EVENT_TO_SEPARATOR);
 
         String from = toSplit[0].trim();
         String to = toSplit[1].trim();
         addTask(new Event(description, from, to));
     }
 
-    private static void handleDelete(String input) throws NateException {
-        int taskIndex = Integer.parseInt(input.substring(COMMAND_DELETE.length())) - 1;
-        if (taskIndex < 0 || taskIndex >= listOfTasks.size()) {
+    private void handleDelete(String input) throws NateException {
+        int taskIndex = Parser.parseIndex(input, COMMAND_DELETE);
+
+        if (!tasks.isValidIndex(taskIndex)) {
             throw new NateException("Task number nowhere to be found...");
         }
-        Task removedTask = listOfTasks.remove(taskIndex);
-        System.out.println("Task removed:");
-        System.out.println("  " + removedTask.getTaskLine());
-        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+        Task removedTask = tasks.remove(taskIndex);
+        ui.showTaskRemoved(removedTask, tasks.size());
         saveTasks();
     }
 
     /** Adds the given task to the task list and prints the confirmation message. */
-    private static void addTask (Task task) {
-        listOfTasks.add(task);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task.getTaskLine());
-
-        System.out.println("Now you have " + listOfTasks.size() + " tasks in the list.");
+    private void addTask (Task task) {
+        tasks.add(task);
+        ui.showTaskAdded(task, tasks.size());
         saveTasks();
     }
 
-    private static void saveTasks() {
+    private void saveTasks() {
         try {
-            Storage.save(listOfTasks);
+            storage.save(tasks);
         } catch (IOException e) {
-            System.out.println("Warning! Could not save tasks to disk.");
+            ui.showMessage("Warning! Could not save tasks to disk.");
         }
+    }
+
+    /**
+     * Starts the Nate chatbot.
+     *
+     * @param args Command-line arguments (not used).
+     */
+    public static void main(String[] args) {
+        new Nate("data" + java.io.File.separator + "nate.txt").run();
     }
 }
