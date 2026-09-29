@@ -2,5 +2,6 @@ D | 1 | sleep | 9pm
 E | 0 | meeting | 2pm | 8pm
 T | 0 | eat
 E | 0 | meet jaymee | 12am | 11pm
-T | 1 | lick
-T | 0 | balls
+T | 0 | run home
+D | 0 | go running | 9pn
+E | 0 | run marathon | 6am | 9am
