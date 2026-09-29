@@ -189,6 +189,7 @@ public class Nate {
         addTask(new Event(description, from, to));
     }
 
+    /** Deletes a task from the list based on the task index. */
     private void handleDelete(String input) throws NateException {
         int taskIndex = Parser.parseIndex(input, COMMAND_DELETE);
 
